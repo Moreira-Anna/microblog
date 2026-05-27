@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MicroBlog</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="logo">
+        <span class="logo-icon">✦</span>
+        <span class="logo-text">MicroBlog</span>
+      </div>
+      <nav class="nav">
+        <a href="#" class="nav-item active" data-view="explore" onclick="showView('explore')">
+          <span class="nav-icon">🌐</span> Explorar
+        </a>
+        <a href="#" class="nav-item" data-view="feed" id="nav-feed" onclick="showView('feed')">
+          <span class="nav-icon">🏠</span> Feed
+        </a>
+        <a href="#" class="nav-item" data-view="search" onclick="showView('search')">
+          <span class="nav-icon">🔍</span> Buscar
+        </a>
+        <a href="#" class="nav-item" id="nav-profile" onclick="showProfile()">
+          <span class="nav-icon">👤</span> Perfil
+        </a>
+      </nav>
+      <div class="sidebar-bottom" id="sidebar-bottom">
+        <div id="auth-buttons">
+          <button class="btn btn-primary" onclick="showModal('login')">Entrar</button>
+          <button class="btn btn-outline" onclick="showModal('register')">Criar conta</button>
+        </div>
+        <div id="user-info" class="user-card hidden">
+          <div class="user-avatar" id="sidebar-avatar">?</div>
+          <div class="user-details">
+            <div class="user-name" id="sidebar-name"></div>
+            <div class="user-handle" id="sidebar-handle"></div>
+          </div>
+          <button class="btn-logout" onclick="logout()" title="Sair">↪</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <main class="main">
+      <!-- Explore view -->
+      <div id="view-explore" class="view active">
+        <div class="view-header">
+          <h2>Explorar</h2>
+        </div>
+        <div id="compose-area" class="compose-area hidden">
+          <div class="compose-box">
+            <div class="compose-avatar" id="compose-avatar">?</div>
+            <div class="compose-input-area">
+              <textarea id="post-content" placeholder="O que está acontecendo?" maxlength="280" oninput="updateCharCount()"></textarea>
+              <div class="compose-footer">
+                <span class="char-count" id="char-count">280</span>
+                <button class="btn btn-primary btn-sm" onclick="createPost()">Publicar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="explore-posts" class="posts-list"></div>
+        <button class="btn-load-more" id="explore-load-more" onclick="loadExplore(true)">Carregar mais</button>
+      </div>
+
+      <!-- Feed view -->
+      <div id="view-feed" class="view">
+        <div class="view-header">
+          <h2>Seu Feed</h2>
+        </div>
+        <div id="feed-posts" class="posts-list"></div>
+        <button class="btn-load-more" id="feed-load-more" onclick="loadFeed(true)">Carregar mais</button>
+      </div>
+
+      <!-- Search view -->
+      <div id="view-search" class="view">
+        <div class="view-header">
+          <h2>Buscar</h2>
+        </div>
+        <div class="search-box">
+          <input type="text" id="search-input" placeholder="Buscar posts, usuários ou #hashtags..." 
+            oninput="debounceSearch()" onkeydown="if(event.key==='Enter') doSearch()">
+          <button class="btn btn-primary" onclick="doSearch()">🔍</button>
+        </div>
+        <div id="search-results"></div>
+      </div>
+
+      <!-- Profile view -->
+      <div id="view-profile" class="view">
+        <div id="profile-content"></div>
+      </div>
+
+      <!-- Post detail view -->
+      <div id="view-post-detail" class="view">
+        <div class="view-header">
+          <button class="btn-back" onclick="goBack()">← Voltar</button>
+          <h2>Post</h2>
+        </div>
+        <div id="post-detail-content"></div>
+      </div>
+    </main>
+
+    <!-- Right sidebar -->
+    <aside class="right-sidebar">
+      <div class="trending-box">
+        <h3>🔥 Em alta hoje</h3>
+        <div id="trending-list"><p class="muted">Carregando...</p></div>
+      </div>
+      <div class="stats-box" id="stats-box"></div>
+    </aside>
+  </div>
+
+  <!-- Modal de login -->
+  <div id="modal-login" class="modal hidden">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal('login')">×</button>
+      <h2>Entrar</h2>
+      <div id="login-error" class="error-msg hidden"></div>
+      <input type="email" id="login-email" placeholder="Email" class="input">
+      <input type="password" id="login-password" placeholder="Senha" class="input">
+      <button class="btn btn-primary full-width" onclick="login()">Entrar</button>
+      <p class="modal-footer">Não tem conta? <a href="#" onclick="switchModal('login','register')">Criar conta</a></p>
+    </div>
+  </div>
+
+  <!-- Modal de registro -->
+  <div id="modal-register" class="modal hidden">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal('register')">×</button>
+      <h2>Criar conta</h2>
+      <div id="register-error" class="error-msg hidden"></div>
+      <input type="text" id="reg-username" placeholder="Username (só letras, números, _)" class="input">
+      <input type="text" id="reg-displayname" placeholder="Nome de exibição" class="input">
+      <input type="email" id="reg-email" placeholder="Email" class="input">
+      <input type="password" id="reg-password" placeholder="Senha (mín. 6 caracteres)" class="input">
+      <button class="btn btn-primary full-width" onclick="register()">Criar conta</button>
+      <p class="modal-footer">Já tem conta? <a href="#" onclick="switchModal('register','login')">Entrar</a></p>
+    </div>
+  </div>
+
+  <!-- Edit profile modal -->
+  <div id="modal-edit-profile" class="modal hidden">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal('edit-profile')">×</button>
+      <h2>Editar Perfil</h2>
+      <input type="text" id="edit-displayname" placeholder="Nome de exibição" class="input">
+      <textarea id="edit-bio" placeholder="Bio (máx. 160 caracteres)" class="input" maxlength="160" rows="3"></textarea>
+      <button class="btn btn-primary full-width" onclick="saveProfile()">Salvar</button>
+    </div>
+  </div>
+
+  <div class="modal-overlay hidden" id="modal-overlay" onclick="closeAllModals()"></div>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>
