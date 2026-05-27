@@ -39,64 +39,6 @@ npm start         # produção
 
 Acesse: **http://localhost:3000**
 
-## 🗂️ Estrutura do Projeto
-
-```
-microblog/
-├── src/
-│   ├── server.js              # Entrada principal
-│   ├── models/
-│   │   ├── User.js            # Model de usuário
-│   │   └── Post.js            # Model de post
-│   ├── routes/
-│   │   ├── auth.js            # Login, registro, logout
-│   │   ├── posts.js           # CRUD de posts, likes, reposts
-│   │   ├── users.js           # Perfil, follow, busca
-│   │   └── api.js             # Busca, trending, stats
-│   └── middleware/
-│       └── auth.js            # Proteção de rotas
-└── public/
-    ├── index.html             # SPA principal
-    ├── css/style.css          # Estilos
-    └── js/app.js              # Lógica do frontend
-```
-
-## 🔌 API Endpoints
-
-### Autenticação
-| Método | Rota | Descrição |
-|--------|------|-----------|
-| POST | /auth/register | Criar conta |
-| POST | /auth/login | Login |
-| POST | /auth/logout | Logout |
-| GET | /auth/me | Usuário atual |
-
-### Posts
-| Método | Rota | Descrição |
-|--------|------|-----------|
-| GET | /posts/explore | Todos os posts |
-| GET | /posts/feed | Posts do feed (auth) |
-| GET | /posts/hashtag/:tag | Posts por hashtag |
-| POST | /posts | Criar post (auth) |
-| GET | /posts/:id | Detalhe + replies |
-| DELETE | /posts/:id | Deletar post (auth) |
-| POST | /posts/:id/like | Curtir/descurtir (auth) |
-| POST | /posts/:id/repost | Repostar (auth) |
-
-### Usuários
-| Método | Rota | Descrição |
-|--------|------|-----------|
-| GET | /users/search?q= | Buscar usuários |
-| GET | /users/:username | Perfil do usuário |
-| PUT | /users/profile/edit | Editar perfil (auth) |
-| POST | /users/:username/follow | Seguir/deixar de seguir (auth) |
-
-### API
-| Método | Rota | Descrição |
-|--------|------|-----------|
-| GET | /api/search?q= | Busca geral |
-| GET | /api/trending | Hashtags em alta (24h) |
-| GET | /api/stats | Estatísticas |
 
 ## ⚙️ Variáveis de Ambiente
 
